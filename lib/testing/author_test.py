@@ -1,34 +1,37 @@
+#author_test.py
 import unittest
 from classes.many_to_many import Author, Magazine
 
 class TestAuthor(unittest.TestCase):
 
     def test_name_is_immutable_string(self):
-        """author name is of type str and cannot change"""
-        author_1 = Author("Carry Bradshaw")
-        author_2 = Author("Nathaniel Hawthorne")
+        """Ensure author's name is an immutable string"""
+        author = Author("Carry Bradshaw")
 
-        assert isinstance(author_1.name, str)
-        assert isinstance(author_2.name, str)
-
-        # comment out the next line because name is immutable
-        # author_1.name = "ActuallyTopher"
+        # Check the name is a string
+        self.assertIsInstance(author.name, str)
+        
+        # Attempting to change the name should raise an error
+        with self.assertRaises(AttributeError):
+            author.name = "ActuallyTopher"
 
     def test_topic_areas_are_unique(self):
-        """topic areas are unique"""
-        author_1 = Author("Carry Bradshaw")
-        author_2 = Author("Giorgio Faletti")
-        magazine_1 = Magazine("Vogue", "Fashion")
-        magazine_2 = Magazine("AD", "Architecture")
-        author_1.add_article(magazine_1, "How to wear a tutu with style")
-        author_1.add_article(magazine_1, "Dating life in NYC")
-        author_1.add_article(magazine_2, "2023 Eccentric Design Trends")
+        """Ensure topic areas are unique"""
+        author = Author("Carry Bradshaw")
+        magazine1 = Magazine("Vogue", "Fashion")
+        magazine2 = Magazine("AD", "Architecture")
 
-        assert len(set(author_1.topic_areas())) == len(author_1.topic_areas())
-        assert len(author_1.topic_areas()) == 2
-        assert "Fashion" in author_1.topic_areas()
-        assert "Architecture" in author_1.topic_areas()
-        assert author_2.topic_areas() == []
+        # Adding articles to the author
+        author.add_article(magazine1, "How to wear a tutu with style")
+        author.add_article(magazine1, "Dating life in NYC")
+        author.add_article(magazine2, "2023 Eccentric Design Trends")
 
-if __name__ == '__main__':
-    unittest.main()
+        # Check unique topic areas
+        self.assertEqual(len(set(author.topic_areas())), len(author.topic_areas()))
+        self.assertEqual(len(author.topic_areas()), 2)
+        self.assertIn("Fashion", author.topic_areas())
+        self.assertIn("Architecture", author.topic_areas())
+
+        # Ensure an author with no articles has no topic areas
+        author2 = Author("Giorgio Faletti")
+        self.assertEqual(author2.topic_areas(), [])
